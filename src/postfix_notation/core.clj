@@ -18,12 +18,12 @@
   if the map op contains the necessary keys
   otherwise throw"
   [op s]
-  (let [{:keys [fn arity]} op]
-    (if (and (not (nil? fn))
-             (not (nil? arity)))
-      (Token. :operation (Operation. fn arity) s)
-      (throw (ex-info "operation mapping should contain :fn and :arity"
-                      {:operation-mapping op})))))
+  (match [op]
+         [{:fn f :arity arity}] (Token. :operation
+                                        (Operation. f arity)
+                                        s)
+         :else (throw (ex-info "operation mapping should contain :fn and :arity"
+                               {:operation-mapping op}))))
 
 (defn- try-parse-int
   "parse the string str if it is integer
@@ -47,12 +47,11 @@
   [s ops]
   (match [(try-parse-int s)]
          [(item :guard number?)] (Token. :value item s)
-         [item]
-         (let [op (get ops item)]
-           (if (not (nil? op))
-             (operation-token op s)
-             (throw (ex-info "this operation should be present in operation mapping"
-                             {:operation item}))))))
+         [item] (let [op (get ops item)]
+                  (if (not (nil? op))
+                    (operation-token op s)
+                    (throw (ex-info "this operation should be present in operation mapping"
+                                    {:operation item}))))))
 
 ;; tokenize list of string
 (defn tokenize
@@ -95,7 +94,8 @@
       {\"stack bot->top\" (1 2), \"token\" \"- \"}
       {\"stack bot->top\" (-1), \"token\" \"\"})]"
   [tokens stack postfix?]
-  (let [verbose {"stack bot->top" (reverse stack) "token" (tokens-to-string tokens)}]
+  (let [verbose {"stack bot->top" (reverse stack)
+                 "token" (tokens-to-string tokens)}]
     (match [tokens]
            [([] :seq)]                  ; tokens end
            (match [stack]
@@ -126,4 +126,3 @@
                   :else (throw (ex-info "don't recognize this token"
                                         {:token head
                                          :rest  tail}))))))
-

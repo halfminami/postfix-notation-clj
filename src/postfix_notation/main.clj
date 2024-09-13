@@ -80,4 +80,3 @@
             (let [[res v] (calc s (into {} operations) postfix?)]
               (do (when verbose? (pp/print-table ["stack bot->top" "token"] v))
                   (println "result:" res))))))))
-
