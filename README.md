@@ -2,6 +2,8 @@ evaluate postfix/prefix notation in Clojure
 
 Both postfix and prefix notation can be evaluated easily with stack.
 
+## Use
+
 The `postfix-notation.core` namespace provides functions for postfix/prefix notation
 evaluation.
 
@@ -11,7 +13,7 @@ You can run it:
 lein run
 ```
 
-The function collects intermediate stack besides the result for visualization.
+The function collects intermediate stack states besides the result for visualization.
 It can be shown like so (for postfix notation `5 2 -` that is $5 - 2$):
 ```
 $ lein run -- -v
@@ -20,12 +22,18 @@ all recognized operations are: (+ - * / mod10+ mod10* land lor max)
 example: 1 2 + 5 -
 input formula: 5 2 -
 
-| stack bot->top |  token |
-|----------------+--------|
-|             () | 5 2 -  |
-|            (5) |   2 -  |
-|          (5 2) |     -  |
-|            (3) |        |
+| stack bot->top | token |
+|----------------+-------|
+|             () |     5 |
+|            (5) |     2 |
+|          (5 2) |     - |
+|            (3) |       |
 result: 3
+```
+
+## Test
+
+```sh
+lein test
 ```
 

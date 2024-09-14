@@ -1,7 +1,8 @@
 (ns postfix-notation.core-test
-  (:require [clojure.test :refer :all]
-            [postfix-notation.core :refer :all]
-            [clojure.core.match :refer [match]]))
+  (:require
+   [clojure.core.match :refer [match]]
+   [clojure.test :refer :all]
+   [postfix-notation.core :refer :all]))
 
 ;; checking :type only
 (defn tokens-equal? [tokens lst]
@@ -11,7 +12,6 @@
          [_ ([] :seq)] false
          [([t-hd & t-tl] :seq) ([l-hd & l-tl] :seq)]
          (let [t-type (get t-hd :type)
-               
                l-type (get l-hd :type)]
            (and (= t-type l-type)
                 (tokens-equal? t-tl l-tl)))))
@@ -27,10 +27,8 @@
 
 (defn tokens [lst] (tokenize lst operations))
 
-(defn evalu [tokens postfix?]
-  (first (evaluate (if postfix? tokens (reverse tokens))
-                   '()
-                   postfix?)))
+(defn evalu [tokens mode]
+  (first (evaluate tokens mode)))
 
 (deftest tokenize-test
   (is (tokens-equal? (tokens '("M" "1" "-20" "+" "-"))
@@ -45,10 +43,10 @@
 
 (deftest evaluate-test
   (testing "postfix notation"
-    (is (= 3 (evalu (tokens '("1" "2" "+")) true)))
-    (is (= -1 (evalu (tokens '("1" "2" "-")) true))
+    (is (= 3 (evalu (tokens '("1" "2" "+")) :postfix)))
+    (is (= -1 (evalu (tokens '("1" "2" "-")) :postfix))
         "order")
-    (is (= 5 (evalu (tokens '("1" "2" "3" "4" "M" "+")) true))
+    (is (= 5 (evalu (tokens '("1" "2" "3" "4" "M" "+")) :postfix))
         "different arity"))
   (testing "prefix notation"
-    (is (= -1 (evalu (tokens '("-" "1" "2")) false)))))
+    (is (= -1 (evalu (tokens '("-" "1" "2")) :prefix)))))
